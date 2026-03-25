@@ -1,0 +1,449 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0A2647;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-dm-sans);
+  --font-mono: ui-monospace, monospace;
+  --color-primary: #0A2647;
+  --color-accent: #FF6B00;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sora), "Sora", sans-serif;
+  letter-spacing: -0.025em;
+}
+
+/* ─────────────────────────────────────────
+   SCROLL-TRIGGERED ANIMATIONS
+───────────────────────────────────────── */
+.animate-on-scroll {
+  opacity: 0;
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.animate-fade-up    { transform: translateY(40px); }
+.animate-fade-down  { transform: translateY(-40px); }
+.animate-fade-left  { transform: translateX(-40px); }
+.animate-fade-right { transform: translateX(40px); }
+.animate-fade-scale { transform: scale(0.9); }
+.animate-fade-in    { transform: none; }
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: none !important;
+}
+
+/* ─────────────────────────────────────────
+   HERO ENTRY ANIMATIONS (always-visible)
+───────────────────────────────────────── */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.hero-anim-1 { animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
+.hero-anim-2 { animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+.hero-anim-3 { animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both; }
+.hero-anim-4 { animation: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
+
+/* ─────────────────────────────────────────
+   FLOATING BLOBS
+───────────────────────────────────────── */
+@keyframes floatBlob1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(40px, -50px) scale(1.06); }
+  66%       { transform: translate(-25px, 25px) scale(0.95); }
+}
+
+@keyframes floatBlob2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(-35px, 35px) scale(1.04); }
+  66%       { transform: translate(30px, -30px) scale(0.96); }
+}
+
+@keyframes floatBlob3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(20px, -20px) scale(1.08); }
+}
+
+.blob-1 { animation: floatBlob1 14s ease-in-out infinite; }
+.blob-2 { animation: floatBlob2 18s ease-in-out infinite; }
+.blob-3 { animation: floatBlob3 10s ease-in-out infinite; }
+
+/* ─────────────────────────────────────────
+   DOT GRID PATTERN
+───────────────────────────────────────── */
+.hero-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ─────────────────────────────────────────
+   SHIMMER BUTTON
+───────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { left: -120%; }
+  100% { left: 180%; }
+}
+
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 65%
+  );
+  animation: shimmer 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────
+   CARD LIFT HOVER
+───────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s ease,
+              border-color 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 22px 44px rgba(10, 38, 71, 0.13);
+}
+
+/* ─────────────────────────────────────────
+   GLOW PULSE (accent elements)
+───────────────────────────────────────── */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
+  50%       { box-shadow: 0 0 24px 6px rgba(255, 107, 0, 0.22); }
+}
+
+.glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+
+/* ─────────────────────────────────────────
+   NAVBAR SCROLL BLUR
+───────────────────────────────────────── */
+.navbar-scrolled {
+  background: rgba(10, 38, 71, 0.88) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* ─────────────────────────────────────────
+   UNDERLINE NAV LINK
+───────────────────────────────────────── */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #FF6B00;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after { width: 100%; }
+
+/* ─────────────────────────────────────────
+   GRADIENT TEXT
+───────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #FF6B00 0%, #ff9a4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─────────────────────────────────────────
+   STAGGER HELPERS (add inline delay instead)
+───────────────────────────────────────── */
+.stagger-1 { transition-delay: 0ms !important; }
+.stagger-2 { transition-delay: 100ms !important; }
+.stagger-3 { transition-delay: 200ms !important; }
+.stagger-4 { transition-delay: 300ms !important; }
+.stagger-5 { transition-delay: 400ms !important; }
+.stagger-6 { transition-delay: 500ms !important; }
+
+/* ─────────────────────────────────────────
+   MARQUEE / TICKER
+───────────────────────────────────────── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes spinSlow {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.marquee-track {
+  animation: marquee 45s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
+.marquee-track:hover { animation-play-state: paused; }
+
+/* ─────────────────────────────────────────
+   ACHIEVEMENT LIST ITEM REVEAL
+───────────────────────────────────────── */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.achieve-item { animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ─────────────────────────────────────────
+   SERVICE TILE SLIDE-IN (hero right panel)
+───────────────────────────────────────── */
+@keyframes tileIn {
+  from { opacity: 0; transform: translateX(32px) translateY(8px); }
+  to   { opacity: 1; transform: translateX(0)    translateY(0); }
+}
+.tile-in {
+  animation: tileIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─────────────────────────────────────────
+   SMOOTH SCROLL
+───────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ─────────────────────────────────────────
+   TYPEWRITER CURSOR
+───────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.85em;
+  background: #FF6B00;
+  margin-left: 3px;
+  vertical-align: middle;
+  border-radius: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+/* ─────────────────────────────────────────
+   TESTIMONIALS CAROUSEL PROGRESS BAR
+───────────────────────────────────────── */
+@keyframes progressFill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+.progress-bar-anim {
+  animation: progressFill linear forwards;
+}
+
+/* ─────────────────────────────────────────
+   ACCORDION EXPAND
+───────────────────────────────────────── */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.3s ease;
+  opacity: 0;
+}
+
+.accordion-content.is-open {
+  max-height: 600px;
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────
+   DECK CARD ANIMATION (Achievements)
+───────────────────────────────────────── */
+@keyframes dealCard {
+  0% {
+    opacity: 0;
+    transform: translateX(90px) scale(0.9);
+  }
+  65% {
+    transform: translateX(-5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.deal-card {
+  opacity: 0;
+}
+
+.deal-card.dealt {
+  animation: dealCard 0.6s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+/* ─────────────────────────────────────────
+   TEAM CARD ACCENT TOP BORDER
+───────────────────────────────────────── */
+.team-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.team-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #FF6B00, #ff9a4a);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.team-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* ─────────────────────────────────────────
+   AURORA / ANIMATED MESH GRADIENT HERO
+───────────────────────────────────────── */
+@keyframes aurora {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.aurora-bg {
+  background: linear-gradient(
+    -45deg,
+    #0A2647,
+    #0D3A6B,
+    #1a2a5e,
+    #0A2647,
+    #1f0d00,
+    #0A2647,
+    #0b1e40
+  );
+  background-size: 400% 400%;
+  animation: aurora 16s ease infinite;
+}
+
+/* ─────────────────────────────────────────
+   SPOTLIGHT / SECTION GLOW
+───────────────────────────────────────── */
+.section-glow {
+  position: relative;
+}
+.section-glow::after {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse at center, rgba(255,107,0,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────
+   NEON GLOW TEXT
+───────────────────────────────────────── */
+.neon-text {
+  text-shadow:
+    0 0 20px rgba(255, 107, 0, 0.5),
+    0 0 40px rgba(255, 107, 0, 0.25),
+    0 0 80px rgba(255, 107, 0, 0.12);
+}
+
+/* ─────────────────────────────────────────
+   FLOATING CTA SCROLL-IN
+───────────────────────────────────────── */
+@keyframes floatUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ─────────────────────────────────────────
+   CARD GLASS (glassmorphism variant)
+───────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ─────────────────────────────────────────
+   TILT CARD 3D — global transition override
+───────────────────────────────────────── */
+[data-tilt] {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ─────────────────────────────────────────
+   SECTION DIVIDER WAVE
+───────────────────────────────────────── */
+.wave-divider {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+.wave-divider svg {
+  display: block;
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────
+   STATS COUNTER (tabular nums for smooth counting)
+───────────────────────────────────────── */
+.counter-stat {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
