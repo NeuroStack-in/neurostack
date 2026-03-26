@@ -97,12 +97,12 @@ const homepageAchievements = [
       </svg>
     ),
     title: "DeepSeek V3 Fine-Tuned Versions",
-    desc: "Fine-tuned the world's largest open-source model - with versions published on Hugging Face.",
+    desc: "Fine-tuned the world's largest open-source model.",
   },
   {
     stat: "25K+",
-    title: "25K+ daily users on AgreeUpon.ai",
-    desc: "Built and deployed a scalable agentic legal document drafting suite for AgreeUpon.ai, Canada.",
+    title: "25K+ daily users for our application",
+    desc: "Built and deployed a scalable agentic legal document drafting suite for lawyers in Canada.",
   },
   {
     stat: (
@@ -136,8 +136,8 @@ const homepageAchievements = [
 
 const ticker = [
   "Agentic AI", "RAG Systems", "Computer Vision", "LLM Fine-tuning",
-  "Edge AI", "API Inferencing", "Posture Estimation", "Generative AI",
-  "IoT + AI", "Speech-to-Text", "Vector Databases", "AI R&D",
+  "API Inferencing", "Posture Estimation", "Generative AI",
+  "Speech Recognition", "AI R&D",
 ];
 
 const jsonLd = {
