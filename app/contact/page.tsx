@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
 import AnimateOnScroll from "../components/AnimateOnScroll";
+
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
 
 const contactInfo = [
   {
@@ -48,11 +53,12 @@ const contactInfo = [
 ];
 
 export default function ContactPage() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [form, setForm] = useState({
     name: "",
     email: "",
-    subject: "",
+    title: "",
     message: "",
   });
 
@@ -64,21 +70,18 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formRef.current) return;
     setStatus("sending");
 
     try {
-      const response = await fetch("/__forms.html", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          "form-name": "contact",
-          ...form,
-        }).toString(),
-      });
-
-      if (!response.ok) throw new Error("Form submission failed");
+      await emailjs.sendForm(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        EMAILJS_PUBLIC_KEY
+      );
       setStatus("sent");
-      setForm({ name: "", email: "", subject: "", message: "" });
+      setForm({ name: "", email: "", title: "", message: "" });
     } catch {
       setStatus("error");
       setTimeout(() => setStatus("idle"), 4000);
@@ -176,7 +179,7 @@ export default function ContactPage() {
               </div>
             </AnimateOnScroll>
 
-            {/* ── Right: Contact Form (Dark Card) with Netlify Forms ── */}
+            {/* ── Right: Contact Form (Dark Card) with EmailJS ── */}
             <AnimateOnScroll animation="fade-left" delay={150}>
               <div className="relative h-full min-h-[720px] lg:min-h-[780px]">
                 <div
@@ -227,14 +230,7 @@ export default function ContactPage() {
                         </button>
                       </div>
                     ) : (
-                      <form
-                        name="contact"
-                        method="POST"
-                        data-netlify="true"
-                        onSubmit={handleSubmit}
-                        className="flex h-full flex-col space-y-6"
-                      >
-                        <input type="hidden" name="form-name" value="contact" />
+                      <form ref={formRef} onSubmit={handleSubmit} className="flex h-full flex-col space-y-6">
                         <div>
                           <label className="block text-xs font-semibold text-white uppercase tracking-[0.15em] mb-2">
                             Full Name <span className="text-[#FF6B00]">*</span>
@@ -271,9 +267,9 @@ export default function ContactPage() {
                           </label>
                           <input
                             type="text"
-                            name="subject"
+                            name="title"
                             required
-                            value={form.subject}
+                            value={form.title}
                             onChange={handleChange}
                             placeholder="How can we help?"
                             className="w-full bg-transparent border-0 border-b border-white/15 pb-3 text-white text-sm placeholder-white/25 focus:outline-none focus:border-[#FF6B00] transition-colors duration-300"
