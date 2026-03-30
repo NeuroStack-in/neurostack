@@ -174,6 +174,8 @@ export default function ProductsPage() {
                           src={product.image}
                           alt={product.title}
                           fill
+                          loading="eager"
+                          priority
                           className="object-contain p-3 rounded-3xl"
                         />
                       </div>
