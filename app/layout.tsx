@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import HideOnStudio from "./components/HideOnStudio";
 
 const CursorGlow = dynamic(() => import("./components/CursorGlow"), {
   loading: () => null,
@@ -89,10 +90,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${sora.variable} ${dmSans.variable} antialiased`}>
-        <CursorGlow />
-        <Navbar />
+        <HideOnStudio>
+          <CursorGlow />
+          <Navbar />
+        </HideOnStudio>
         {children}
-        <Footer />
+        <HideOnStudio>
+          <Footer />
+        </HideOnStudio>
         <Analytics />
         <SpeedInsights />
         <GoogleAnalytics gaId="G-J64HQMDMH9" />

@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    // Event posters and photos are served from Sanity's image CDN
+    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
+  },
   async headers() {
     return [
       {

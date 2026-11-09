@@ -10,11 +10,16 @@ const links = [
   { label: "Services", href: "/services" },
   { label: "Products", href: "/products" },
   { label: "Research", href: "/research" },
+  { label: "Events", href: "/events" },
   { label: "About Us", href: "/about" },
 ];
 
 // Pages whose hero section has a light background
-const LIGHT_HERO_PAGES = ["/about", "/services", "/products", "/contact", "/research"];
+const LIGHT_HERO_PAGES = ["/about", "/services", "/products", "/contact", "/research", "/events"];
+
+// "/events/some-event" counts as being on "/events"
+const isActiveLink = (pathname: string, href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -22,7 +27,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   // Light mode = light hero background AND not yet scrolled
-  const isLightHero = LIGHT_HERO_PAGES.includes(pathname);
+  const isLightHero = LIGHT_HERO_PAGES.some((page) => isActiveLink(pathname, page));
   const useDarkText = isLightHero && !scrolled;
 
   useEffect(() => {
@@ -81,7 +86,7 @@ export default function Navbar() {
             {/* ── Desktop Nav — centered ── */}
             <div className="hidden md:flex items-center gap-10">
               {links.map((l) => {
-                const active = pathname === l.href;
+                const active = isActiveLink(pathname, l.href);
                 return (
                   <Link
                     key={l.href}
@@ -141,7 +146,7 @@ export default function Navbar() {
         <div className="mx-4 mt-2 bg-[#0a1628]/95 backdrop-blur-2xl rounded-2xl border border-white/[0.07] shadow-[0_16px_48px_rgba(0,0,0,0.4)] p-5">
           <div className="space-y-1">
             {links.map((l) => {
-              const active = pathname === l.href;
+              const active = isActiveLink(pathname, l.href);
               return (
                 <Link
                   key={l.href}
