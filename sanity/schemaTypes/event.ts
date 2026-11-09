@@ -13,6 +13,28 @@ function hasHost(url: string, hosts: string[]) {
 
 type EventDoc = { mode?: string; startsAt?: string };
 
+const FORM_PROBLEMS: Record<string, string> = {
+  "sign-in-required":
+    "This form asks people to sign in to Google, so the website can't save registrations into it and shows a button to Google Forms instead. To fix it, open the form → Settings → Responses: set \"Collect email addresses\" to \"Do not collect\" (add your own Email question instead) and turn off \"Limit to 1 response\". Then check this field again.",
+  closed: "This form isn't accepting responses. Turn on \"Accepting responses\" in the form's Responses tab.",
+};
+
+// Asks the website whether visitors will be able to register with this form.
+async function checkFormWorksOnSite(url: string | undefined) {
+  if (!url || !hasHost(url, GOOGLE_FORM_HOSTS)) return true;
+  try {
+    const res = await fetch(`/api/events/check-form?url=${encodeURIComponent(url)}`);
+    const { problem } = (await res.json()) as { problem: string | null };
+    if (!problem) return true;
+    if (problem.startsWith("question-type-")) {
+      return "This form has a question type the website can't show (such as file upload or a grid), so the website shows a button to Google Forms instead.";
+    }
+    return FORM_PROBLEMS[problem] ?? true;
+  } catch {
+    return true; // Can't check right now; don't block the editor.
+  }
+}
+
 export const eventType = defineType({
   name: "event",
   title: "Event",
@@ -243,12 +265,14 @@ export const eventType = defineType({
       group: "registration",
       description:
         "Open the form in Google Forms → Send → link icon → copy. The website shows the same questions in its own design, and every registration lands in this form's Responses. In the form's Settings, turn off \"Restrict to users in your organisation\", \"Limit to 1 response\", verified email collection and file-upload questions, as they make visitors sign in to Google.",
-      validation: (r) =>
+      validation: (r) => [
         r.required().custom((url) =>
           !url || hasHost(url, GOOGLE_FORM_HOSTS)
             ? true
             : "Paste the Google Form's share link (docs.google.com/forms/… or forms.gle/…).",
         ),
+        r.custom(checkFormWorksOnSite).warning(),
+      ],
     }),
     defineField({
       name: "registrationOpen",

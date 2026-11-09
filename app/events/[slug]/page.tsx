@@ -116,7 +116,7 @@ async function Registration({ event, open }: { event: EventDetail; open: boolean
   const ended = !isUpcoming(event);
 
   if (open && event.googleFormUrl) {
-    const form = await loadGoogleForm(event.googleFormUrl);
+    const form = await loadGoogleForm(event.googleFormUrl, { checkAccess: true });
     const fallbackUrl = normalizeFormUrl(event.googleFormUrl) ?? undefined;
     if (form.status === "ok") {
       return (

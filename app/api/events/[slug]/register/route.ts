@@ -45,7 +45,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
       { status: 422 },
     );
   }
-  if (!(await submitGoogleForm(form, submission.body))) {
+  const result = await submitGoogleForm(form, submission.body);
+  if (result === "sign-in-required") {
+    return NextResponse.json(
+      { error: "This event's form needs you to sign in to Google.", fallbackUrl },
+      { status: 502 },
+    );
+  }
+  if (result !== "ok") {
     return NextResponse.json({ error: "We couldn't save your registration.", fallbackUrl }, { status: 502 });
   }
 

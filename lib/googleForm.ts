@@ -91,7 +91,18 @@ export function normalizeFormUrl(raw: string): string | null {
   return `https://docs.google.com/forms/d/${match[1] ?? ""}${match[2]}/viewform`;
 }
 
-export async function loadGoogleForm(rawUrl: string): Promise<GoogleFormResult> {
+// checkAccess: also confirm Google accepts answers without a sign-in (see
+// acceptsAnonymousAnswers). Costs one extra request, so it is done when the
+// event page is built, not on every registration.
+export async function loadGoogleForm(rawUrl: string, { checkAccess = false } = {}): Promise<GoogleFormResult> {
+  const form = await fetchGoogleForm(rawUrl);
+  if (checkAccess && form.status === "ok" && (await acceptsAnonymousAnswers(form)) === false) {
+    return { status: "unsupported", reason: "sign-in-required" };
+  }
+  return form;
+}
+
+async function fetchGoogleForm(rawUrl: string): Promise<GoogleFormResult> {
   const url = normalizeFormUrl(rawUrl);
   if (!url) return { status: "unsupported", reason: "not-a-google-form-link" };
 
@@ -298,16 +309,36 @@ export function buildSubmission(
   return { body };
 }
 
-export async function submitGoogleForm(form: ParsedForm, body: URLSearchParams): Promise<boolean> {
+export type SubmitResult = "ok" | "sign-in-required" | "failed";
+
+export async function submitGoogleForm(form: ParsedForm, body: URLSearchParams): Promise<SubmitResult> {
   try {
     const res = await fetch(form.submitUrl, {
       method: "POST",
       body,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       cache: "no-store",
+      redirect: "manual",
     });
-    return res.ok;
+    if (res.ok) return "ok";
+    // 401, or a redirect to accounts.google.com: the form only takes answers
+    // from people signed in to Google ("Collect email addresses: Verified",
+    // "Limit to 1 response", or "Restrict to users in your organisation").
+    if (res.status === 401 || res.status === 403 || (res.status >= 300 && res.status < 400)) return "sign-in-required";
+    return "failed";
   } catch {
-    return false;
+    return "failed";
   }
+}
+
+// Sends a blank answer sheet. Google checks for a sign-in before it checks
+// the answers, so a form that needs one replies 401, and any other form
+// replies 400 for the missing required answers and saves nothing. Only safe
+// when at least one question is required, since a blank sheet would otherwise
+// be saved as a response; returns undefined (unknown) in that case.
+export async function acceptsAnonymousAnswers(form: ParsedForm): Promise<boolean | undefined> {
+  if (!form.items.some((item) => item.type === "question" && item.required)) return undefined;
+  const body = new URLSearchParams({ fvv: "1", pageHistory: "0" });
+  if (form.fbzx) body.append("fbzx", form.fbzx);
+  return (await submitGoogleForm(form, body)) !== "sign-in-required";
 }
